@@ -1,4 +1,4 @@
-package ir.miare.androidcodechallenge
+package ir.miare.androidcodechallenge.view
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
