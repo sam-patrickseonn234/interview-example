@@ -27,7 +27,11 @@ class PlayersViewModel @Inject constructor(
         viewModelScope.launch {
             val disposable: Disposable = getPlayersRepository.getData()
                 .subscribe { data ->
-                    _allPlayers.postValue(data)
+                    when(data) {
+                        is ResultWrapper.Error -> _allPlayers.postValue(ResultWrapper.Error(data.exception))
+                        ResultWrapper.Loading -> _allPlayers.postValue(ResultWrapper.Loading)
+                        is ResultWrapper.Success -> _allPlayers.postValue(data)
+                    }
                 }
         }
     }
