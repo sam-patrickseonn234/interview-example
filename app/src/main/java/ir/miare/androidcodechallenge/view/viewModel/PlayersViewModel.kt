@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.disposables.Disposable
 import ir.miare.androidcodechallenge.model.model.FakeData
 import ir.miare.androidcodechallenge.model.repository.GetPlayersRepository
 import ir.miare.androidcodechallenge.utiles.ResultWrapper
@@ -21,24 +22,13 @@ class PlayersViewModel @Inject constructor(
     init {
         getAllPlayers()
     }
+
     private fun getAllPlayers() {
         viewModelScope.launch {
-            getPlayersRepository.getData().collect { result ->
-                when (result) {
-                    is ResultWrapper.Error -> {
-                        _allPlayers.postValue(
-                            ResultWrapper.Error(result.exception),
-                        )
-                    }
-
-                    ResultWrapper.Loading -> {
-                        _allPlayers.postValue(ResultWrapper.Loading)
-                    }
-                    is ResultWrapper.Success -> {
-                        _allPlayers.postValue(ResultWrapper.Success(result.data))
-                    }
+            val disposable: Disposable = getPlayersRepository.getData()
+                .subscribe { data ->
+                    _allPlayers.postValue(data)
                 }
-            }
         }
     }
 }
